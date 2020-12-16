@@ -20,12 +20,17 @@ def submit_query(event, context):
 
 def status_check(event, context):
     print("Event:", event)
-
     query_execution_id = event["query_execution_id"]
+    client = boto3.client('athena')
     query_status = client.get_query_execution(QueryExecutionId=query_execution_id)
     query_execution_status = query_status['QueryExecution']['Status']['State']
 
-    return {"status": query_execution_status}
+    result = {
+        "status": query_execution_status,
+        "query_execution_id": query_execution_id
+        }
+    
+    return result
 
 
 def get_result(event, context):
