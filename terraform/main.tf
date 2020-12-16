@@ -76,86 +76,86 @@ EOF
 resource "aws_iam_role" "step_function_role" {
   name               = "athena-runner-step-function-role"
   assume_role_policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Action": "sts:AssumeRole",
-        "Principal": {
-          "Service": "states.amazonaws.com"
-        },
-        "Effect": "Allow",
-        "Sid": "StepFunctionAssumeRole"
-      }
-    ]
-  }
-  EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "states.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": "StepFunctionAssumeRole"
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_iam_role_policy" "step_function_policy" {
-  name    = "athena-runner-step-function-policy"
-  role    = aws_iam_role.step_function_role.id
+  name = "athena-runner-step-function-policy"
+  role = aws_iam_role.step_function_role.id
 
-  policy  = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Action": [
-          "lambda:InvokeFunction"
-        ],
-        "Effect": "Allow",
-        "Resource": [
-            ${module.submit_query_lambda.aws_lambda_function.arn},
-            ${module.status_check_lambda.aws_lambda_function.arn},
-            ${module.get_result_lambda.aws_lambda_function.arn}
-        ]
-      }
-    ]
-  }
-  EOF
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "lambda:InvokeFunction"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+          ${module.submit_query_lambda.aws_lambda_function.arn},
+          ${module.status_check_lambda.aws_lambda_function.arn},
+          ${module.get_result_lambda.aws_lambda_function.arn}
+      ]
+    }
+  ]
+}
+EOF
 }
 
 module "submit_query_lambda" {
-    source = "./modules/lambda"
+  source = "./modules/lambda"
 
-    bucket = var.deploy_bucket_name
-    s3_key = var.athena_runner_s3_key
-    s3_object_version = var.athena_runner_s3_object_version
-    name = "submit-query"
-    handler = "src.handler.submit_query"
-    env_vars = {
-        LOG_LEVEL = var.log_level
-        ENV_NAME = var.env_name
-    }
+  bucket            = var.deploy_bucket_name
+  s3_key            = var.athena_runner_s3_key
+  s3_object_version = var.athena_runner_s3_object_version
+  name              = "submit-query"
+  handler           = "src.handler.submit_query"
+  env_vars = {
+    LOG_LEVEL = var.log_level
+    ENV_NAME  = var.env_name
+  }
 }
 
 module "status_check_lambda" {
-    source = "./modules/lambda"
+  source = "./modules/lambda"
 
-    bucket = var.deploy_bucket_name
-    s3_key = var.athena_runner_s3_key
-    s3_object_version = var.athena_runner_s3_object_version
-    name = "status-check"
-    handler = "src.handler.status_check"
-    env_vars = {
-        LOG_LEVEL = var.log_level
-        ENV_NAME = var.env_name
-    }
+  bucket            = var.deploy_bucket_name
+  s3_key            = var.athena_runner_s3_key
+  s3_object_version = var.athena_runner_s3_object_version
+  name              = "status-check"
+  handler           = "src.handler.status_check"
+  env_vars = {
+    LOG_LEVEL = var.log_level
+    ENV_NAME  = var.env_name
+  }
 }
 
 module "get_result_lambda" {
-    source = "./modules/lambda"
+  source = "./modules/lambda"
 
-    bucket = var.deploy_bucket_name
-    s3_key = var.athena_runner_s3_key
-    s3_object_version = var.athena_runner_s3_object_version
-    name = "get-result"
-    handler = "src.handler.get_result"
-    env_vars = {
-        LOG_LEVEL = var.log_level
-        ENV_NAME = var.env_name
-    }
+  bucket            = var.deploy_bucket_name
+  s3_key            = var.athena_runner_s3_key
+  s3_object_version = var.athena_runner_s3_object_version
+  name              = "get-result"
+  handler           = "src.handler.get_result"
+  env_vars = {
+    LOG_LEVEL = var.log_level
+    ENV_NAME  = var.env_name
+  }
 }
 
 resource "aws_iam_policy" "this" {
@@ -207,11 +207,11 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "this" {
-    name = "athena-runner-lambda-attachment"
-    roles = [
-            module.submit_query_lambda.aws_iam_role.name,
-            module.status_check_lambda.aws_iam_role.name,
-            module.get_result_lambda.aws_iam_role.name
-        ]
-    policy_arn = aws_iam_policy.this.arn
+  name = "athena-runner-lambda-attachment"
+  roles = [
+    module.submit_query_lambda.aws_iam_role.name,
+    module.status_check_lambda.aws_iam_role.name,
+    module.get_result_lambda.aws_iam_role.name
+  ]
+  policy_arn = aws_iam_policy.this.arn
 }
