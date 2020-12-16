@@ -1,0 +1,4 @@
+{
+    "query": "SELECT * FROM default.athenarunnertest",
+    "result_path": "s3://athena-runner-test-data/result/"
+}
