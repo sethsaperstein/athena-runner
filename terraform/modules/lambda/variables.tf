@@ -16,7 +16,7 @@ variable "name" {
 
 variable "timeout" {
     type = number
-    default = 900
+    default = 120
 }
 
 variable "handler" {
