@@ -35,7 +35,7 @@ resource "aws_sfn_state_machine" "athena_runner" {
     "wait": {
         "Type": "Wait",
         "Seconds": ${var.seconds_to_wait},
-        "Next": "poll_status"
+        "Next": "status_check"
     },
     "status_check": {
         "Type": "Task",
@@ -106,9 +106,9 @@ resource "aws_iam_role_policy" "step_function_policy" {
       ],
       "Effect": "Allow",
       "Resource": [
-          ${module.submit_query_lambda.aws_lambda_function.arn},
-          ${module.status_check_lambda.aws_lambda_function.arn},
-          ${module.get_result_lambda.aws_lambda_function.arn}
+          "${module.submit_query_lambda.aws_lambda_function.arn}",
+          "${module.status_check_lambda.aws_lambda_function.arn}",
+          "${module.get_result_lambda.aws_lambda_function.arn}"
       ]
     }
   ]
